@@ -19,7 +19,10 @@ def generate(prompt: str):
         ),
     ]
     generate_content_config = types.GenerateContentConfig(
-        tools=[types.Tool(google_search=types.GoogleSearch())],
+        tools = [
+            types.Tool(url_context=types.UrlContext()),
+            types.Tool(google_search=types.GoogleSearch()),
+        ],
         response_mime_type="text/plain",
         thinking_config = types.ThinkingConfig(
             thinking_budget=16384,
