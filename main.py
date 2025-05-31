@@ -2,6 +2,7 @@ import base64
 import os
 from google import genai
 from google.genai import types
+from fire import Fire
 import httpx
 import fastmcp
 
@@ -28,7 +29,7 @@ def generate(prompt: str):
             thinking_budget=16384,
         ),
         system_instruction=[
-            types.Part.from_text(text="User prefers consise, but informative answers. Be sure to include all relevant information. Always use web search to find the most up-to-date information and documentation."),
+            types.Part.from_text(text="User prefers consise, but informative answers. Be sure to include all relevant information. Always use web search to find the most up-to-date information and documentation. Use as many sources as possible to provide a comprehensive answer."),
         ],
     )
 
@@ -70,13 +71,17 @@ def generate(prompt: str):
     description="Ask experienced helpful software engineer for an up-to-date advice on a software engineering problem. This person has full access to the very latest information and documentation.",
 )
 def ask_for_advice(question: str) -> str:
-    print(f"Received question: {question}")
     answer = generate(
         question
     )
-    print(f"Generated answer: {answer}")
     return answer
 
+
+def main(prompt=None):
+    if prompt is None:
+        mcp.run(transport="sse", host="127.0.0.1", port=8000, path="/mcp")
+    else:
+        print(generate(prompt))
+
 if __name__ == "__main__":
-    # print(generate("Is everyone still that obsessed with MCP servers?"))
-    mcp.run(transport="sse", host="127.0.0.1", port=8000, path="/mcp")
+    Fire(main)
