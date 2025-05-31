@@ -62,5 +62,5 @@ def ask_for_advice(question: str) -> str:
     return answer
 
 if __name__ == "__main__":
-    print(generate("Is everyone still that obsessed with MCP servers?"))
-    # mcp.run(transport="sse", host="127.0.0.1", port=8000, path="/mcp")
+    # print(generate("Is everyone still that obsessed with MCP servers?"))
+    mcp.run(transport="sse", host="127.0.0.1", port=8000, path="/mcp")
