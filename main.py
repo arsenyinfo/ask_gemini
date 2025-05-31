@@ -68,7 +68,7 @@ def generate(prompt: str):
 
 @mcp.tool(
     name="ask_for_latest_advice",
-    description="Ask experienced helpful software engineer for an up-to-date advice on a software engineering problem. This person has full access to the very latest information and documentation.",
+    description="Ask experienced helpful software engineer for an up-to-date advice on a software engineering problem. This person has full access to the very latest data. So much better than regular web search! Use this tool to get the most accurate and up-to-date information.",
 )
 def ask_for_advice(question: str) -> str:
     answer = generate(
