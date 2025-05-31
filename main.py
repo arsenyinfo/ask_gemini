@@ -2,6 +2,7 @@ import base64
 import os
 from google import genai
 from google.genai import types
+import httpx
 import fastmcp
 
 mcp = fastmcp.FastMCP("Software Advice MCP")
@@ -33,13 +34,25 @@ def generate(prompt: str):
         contents=contents,
         config=generate_content_config,
     )
+
     match resp.candidates:
         case [candidate]:
             if candidate.content is not None:
                 parts = candidate.content.parts
                 match parts:
                     case list():
-                        return "".join(filter(None, [part.text for part in parts]))
+                        main_text = "".join(filter(None, [part.text for part in parts]))
+                        if candidate.grounding_metadata is not None:
+                            grounding_chunks = candidate.grounding_metadata.grounding_chunks
+                            if grounding_chunks:
+                                links = [
+                                    httpx.get(chunk.web.uri, follow_redirects=True).url
+                                    for chunk in grounding_chunks
+                                ]
+                                main_text += "\n\nSources:\n" + "\n".join(map(str, links))
+
+                        return main_text
+
                     case _:
                         raise RuntimeError(f"Unexpected content type returned: {parts}")
         case None:
