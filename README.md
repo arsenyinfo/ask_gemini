@@ -5,6 +5,8 @@ A minimal MCP server that exposes Google's Gemini 2.5 Flash with web search capa
 - Provides access to Gemini 2.5 Flash
 - Includes built-in Google Search integration for up-to-date information.
 
+Currently Google provides [1500 search queries per day for free](https://ai.google.dev/gemini-api/docs/grounding?lang=python#configure-search).
+
 ## Prerequisites
 
 - [uv package manager](https://docs.astral.sh/uv/)
@@ -33,3 +35,7 @@ Attach to Claude Code
 claude mcp add --transport sse "search" http://127.0.0.1:8000/mcp
 ```
 Of course, other MCP clients can use it too.
+
+## Reliability
+
+Gemini API is known for being not the most reliable, PRs with retries and other workarounds are welcome. 
