@@ -1,0 +1,66 @@
+import base64
+import os
+from google import genai
+from google.genai import types
+import fastmcp
+
+mcp = fastmcp.FastMCP("Software Advice MCP")
+
+def generate(prompt: str):
+    client = genai.Client(api_key=os.environ["GEMINI_API_KEY"])
+    model = "gemini-2.5-flash-preview-05-20"
+    contents = [
+        types.Content(
+            role="user",
+            parts=[
+                types.Part.from_text(text=prompt),
+            ],
+        ),
+    ]
+    generate_content_config = types.GenerateContentConfig(
+        tools=[types.Tool(google_search=types.GoogleSearch())],
+        response_mime_type="text/plain",
+        thinking_config = types.ThinkingConfig(
+            thinking_budget=16384,
+        ),
+        system_instruction=[
+            types.Part.from_text(text="User prefers consise, but informative answers. Be sure to include all relevant information. Always use web search to find the most up-to-date information and documentation."),
+        ],
+    )
+
+    resp = client.models.generate_content(
+        model=model,
+        contents=contents,
+        config=generate_content_config,
+    )
+    match resp.candidates:
+        case [candidate]:
+            if candidate.content is not None:
+                parts = candidate.content.parts
+                match parts:
+                    case list():
+                        return "".join(filter(None, [part.text for part in parts]))
+                    case _:
+                        raise RuntimeError(f"Unexpected content type returned: {parts}")
+        case None:
+            return "No candidates returned, please try again."
+        case _:
+            return "Multiple candidates returned, expected only one."
+
+
+
+@mcp.tool(
+    name="ask_for_latest_advice",
+    description="Ask experienced helpful software engineer for an up-to-date advice on a software engineering problem. This person has full access to the very latest information and documentation.",
+)
+def ask_for_advice(question: str) -> str:
+    print(f"Received question: {question}")
+    answer = generate(
+        question
+    )
+    print(f"Generated answer: {answer}")
+    return answer
+
+if __name__ == "__main__":
+    print(generate("Is everyone still that obsessed with MCP servers?"))
+    # mcp.run(transport="sse", host="127.0.0.1", port=8000, path="/mcp")
