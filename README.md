@@ -2,9 +2,8 @@
 
 A minimal MCP server that exposes Google's Gemini 2.5 Flash with web search capabilities as a tool.
 
-- Provides access to Gemini 2.5 Flash with thinking mode enabled
-- Includes built-in Google Search integration for up-to-date information
-- Simple FastMCP-based implementation
+- Provides access to Gemini 2.5 Flash
+- Includes built-in Google Search integration for up-to-date information.
 
 ## Prerequisites
 
